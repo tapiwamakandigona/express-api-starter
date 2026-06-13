@@ -8,10 +8,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - run: npm install
-      - name: Build (non-blocking)
+          cache: 'npm'
+      - run: npm ci
+      - name: Build
         run: npm run build
-        continue-on-error: true
-      - name: Test (non-blocking)
+      - name: Test
         run: npm test
-        continue-on-error: true
