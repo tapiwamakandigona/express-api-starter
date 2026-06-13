@@ -2,13 +2,14 @@ import { Router } from 'express';
 import bcrypt from 'bcryptjs';
 import { generateToken } from '../middleware/auth';
 import { AppError } from '../middleware/errorHandler';
+import { asyncHandler } from '../utils/asyncHandler';
 
 export const authRouter = Router();
 
 // In-memory store (replace with Prisma in production)
 const users = new Map<string, { id: string; email: string; password: string; name: string }>();
 
-authRouter.post('/register', async (req, res) => {
+authRouter.post('/register', asyncHandler(async (req, res) => {
   const { email, password, name } = req.body;
   
   if (!email || !password || !name) {
@@ -29,9 +30,9 @@ authRouter.post('/register', async (req, res) => {
   
   const token = generateToken(id);
   res.status(201).json({ status: 'ok', token, user: { id, email, name } });
-});
+}));
 
-authRouter.post('/login', async (req, res) => {
+authRouter.post('/login', asyncHandler(async (req, res) => {
   const { email, password } = req.body;
   
   if (!email || !password) {
@@ -45,4 +46,4 @@ authRouter.post('/login', async (req, res) => {
   
   const token = generateToken(user.id);
   res.json({ status: 'ok', token, user: { id: user.id, email: user.email, name: user.name } });
-});
+}));
