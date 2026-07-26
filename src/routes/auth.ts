@@ -1,22 +1,13 @@
-import { Router, Request, Response, NextFunction } from 'express';
+import { Router } from 'express';
 import bcrypt from 'bcryptjs';
 import { generateToken } from '../middleware/auth';
 import { AppError } from '../middleware/errorHandler';
+import { asyncHandler } from '../utils/asyncHandler';
 
 export const authRouter = Router();
 
-// In-memory store (replace with a database in production)
+// In-memory store (replace with Prisma in production)
 const users = new Map<string, { id: string; email: string; password: string; name: string }>();
-
-/**
- * Wraps an async route handler so rejected promises are forwarded to
- * Express error-handling middleware (Express 4 does not do this natively).
- */
-function asyncHandler(fn: (req: Request, res: Response, next: NextFunction) => Promise<void>) {
-  return (req: Request, res: Response, next: NextFunction) => {
-    fn(req, res, next).catch(next);
-  };
-}
 
 authRouter.post('/register', asyncHandler(async (req, res) => {
   const { email, password, name } = req.body;
